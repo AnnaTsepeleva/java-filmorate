@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ class FilmorateApplicationTests {
 
 
     @Test
-    void AddFilm() throws Exception {
+    void addFilm() throws Exception {
         Film film = Film.builder()
                 .id(1)
                 .name("Test")
@@ -43,6 +42,7 @@ class FilmorateApplicationTests {
                 .andExpect(status().is(HttpStatus.CREATED.value()))
                 .andReturn();
     }
+
     @Test
     void notAddNullNameFilm() throws Exception {
         Film film = Film.builder()
@@ -124,7 +124,7 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    void AddUser() throws Exception {
+    void addUser() throws Exception {
         User user = User.builder()
                 .id(1)
                 .name("")

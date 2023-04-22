@@ -6,63 +6,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.validators.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-
-import javax.validation.*;
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 
 @RestController
+@RequestMapping("/films")
 public class FilmController {
-
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final HashMap<Integer, Film> films = new HashMap<>();
     private int idF = 1;
 
-    @PostMapping("/films")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Film createFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос.");
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<Film>> validate = validator.validate(film);
-        if (validate.size() > 0) {
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "Ошибка валидации");
-        }
-        validatorFactory.close();
-
         if (films.containsKey(film.getId())) {
             log.warn("Такой фильм уже существует");
             throw new ValidationException(HttpStatus.BAD_REQUEST, "Такой фильм уже есть");
-        } else {
-            film.setId(idF);
-            films.put(film.getId(), film);
-            log.info("Фильм добавлен");
-            idF++;
         }
+        film.setId(idF++);
+        films.put(film.getId(), film);
+        log.info("Фильм добавлен {}", film);
         return film;
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> findAll() {
-        return films.entrySet()
-                .stream()
-                .map(e -> e.getValue())
-                .collect(Collectors.toList());
+        return new ArrayList<>(films.values());
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film saveFilm(@Valid @RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-            log.info("Фильм обновлен");
-        } else {
+        if (!films.containsKey(film.getId())) {
             log.warn("Фильм не найден");
             throw new ValidationException(HttpStatus.NOT_FOUND, "Фильм не найден");
         }
+        films.put(film.getId(), film);
+        log.info("Фильм обновлен {}", film);
         return film;
     }
-
 }

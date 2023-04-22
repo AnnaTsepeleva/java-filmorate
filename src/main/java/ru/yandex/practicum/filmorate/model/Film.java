@@ -15,11 +15,10 @@ public class Film {
     private int id;
     @NotBlank
     private final String name;
-    @Size(max = 200, message = "Описание не может быть более 200 символов")
+    @Size(min = 1, max = 200, message = "Описание не может быть пустым и более 200 символов")
     private final String description;
     @Positive
     private final long duration;
     @DateReleaseValidator(message = "Некорректная дата релиза")
     private final LocalDate releaseDate;
-
 }
