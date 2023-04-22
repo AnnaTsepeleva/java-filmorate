@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @RestController
 public class FilmController {
 
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final HashMap <Integer, Film> films = new HashMap();
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final HashMap<Integer, Film> films = new HashMap<>();
     private int idF = 1;
 
     @PostMapping("/films")
