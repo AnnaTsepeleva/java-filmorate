@@ -21,9 +21,9 @@ public class User {
     @Pattern(regexp = "^\\S*")
     private String login;
     private String name;
+    private Set<Integer> friends;
     @Past
     private LocalDate birthday;
-    private Set<Integer> friends;
 
     public Set<Integer> getFriends() {
         if (this.friends == null) {
