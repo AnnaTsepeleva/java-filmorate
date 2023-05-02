@@ -25,13 +25,10 @@ public class Film {
     private int id;
     private Set<Integer> likes;
 
-    Film(int id, String name, String description, long duration, LocalDate releaseDate, Set<Integer> likes) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.duration = duration;
-        this.releaseDate = releaseDate;
-        this.likes = new HashSet<>();
+    public Set<Integer> getLikes() {
+        if (this.likes == null) {
+            return new HashSet<>();
+        }
+        return likes;
     }
-
 }

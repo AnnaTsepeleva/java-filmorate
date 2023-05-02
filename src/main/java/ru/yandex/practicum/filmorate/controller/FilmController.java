@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.validators.ValidationException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -47,20 +46,15 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void likeFilm(@PathVariable("id") int filmId, @PathVariable("userId") int userId) {
-        if (filmService.findFilmById(filmId) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Фильм " + filmId + " не найден");
-        }
-        if (userService.findUserById(userId) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь " + userId + " не найден");
-        }
+        filmService.findFilmById(filmId);
+        userService.findUserById(userId);
         filmService.likeFilm(filmId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable("id") int filmId, @PathVariable("userId") int userId) {
-        if (filmService.findFilmById(filmId) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Фильм " + filmId + " не найден");
-        }
+        filmService.findFilmById(filmId);
+        userService.findUserById(userId);
         filmService.deleteLike(filmId, userId);
     }
 
