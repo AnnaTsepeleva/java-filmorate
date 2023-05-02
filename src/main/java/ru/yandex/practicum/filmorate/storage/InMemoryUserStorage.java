@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validators.NotFoundException;
 import ru.yandex.practicum.filmorate.validators.ValidationException;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User editUser(User user) {
         if (!users.containsKey(user.getId())) {
             log.warn("Пользователь не найден");
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "Пользователь не найден");
         }
         users.put(user.getId(), user);
         log.info("Пользователь обновлен");
@@ -56,6 +57,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserByID(int id) {
+        if (!users.containsKey(id)) {
+            log.warn("Пользователь не найден");
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+        }
         return users.get(id);
     }
 }

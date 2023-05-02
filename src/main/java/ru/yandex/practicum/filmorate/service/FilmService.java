@@ -1,20 +1,16 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.validators.ValidationException;
 
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
-
-    @Autowired
-    private FilmStorage filmStorage = new InMemoryFilmStorage();
 
     Comparator<Film> filmComparator = new Comparator<Film>() {
         @Override
@@ -25,7 +21,8 @@ public class FilmService {
             return o2.getLikes().size() - o1.getLikes().size();
         }
     };
-
+    @Autowired
+    private final FilmStorage filmStorage;
 
     public Film createFilm(Film film) {
         return filmStorage.createFilm(film);
@@ -44,21 +41,17 @@ public class FilmService {
     }
 
     public void likeFilm(int filmId, int userId) {
-        Set<Integer> likes = filmStorage.getFilmByID(filmId).getLikes();
-        likes.add(userId);
-        filmStorage.getFilmByID(filmId).setLikes(likes);
+        Film film = filmStorage.getFilmByID(filmId);
+        Set<Integer> likeList = film.getLikes();
+        likeList.add(userId);
+        film.setLikes(likeList);
     }
 
     public void deleteLike(int filmId, int userId) {
-        Set<Integer> likes = filmStorage.getFilmByID(filmId).getLikes();
-        if (likes.isEmpty()) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Фильм не имеет лайков");
-        }
-        if (!likes.contains(userId)) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь не лайкал фильм");
-        }
-        likes.remove(userId);
-        filmStorage.getFilmByID(filmId).setLikes(likes);
+        Film film = filmStorage.getFilmByID(filmId);
+        Set<Integer> likeList = film.getLikes();
+        likeList.remove(userId);
+        film.setLikes(likeList);
     }
 
     public List<Film> filmRate(int count) {
@@ -79,9 +72,6 @@ public class FilmService {
     }
 
     public Film findFilmById(int id) {
-        if (filmStorage.getFilmByID(id) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Фильм не найден");
-        }
         return filmStorage.getFilmByID(id);
     }
 

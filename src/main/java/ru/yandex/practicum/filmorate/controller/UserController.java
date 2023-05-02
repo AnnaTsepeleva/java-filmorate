@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.validators.ValidationException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -39,29 +38,17 @@ public class UserController {
     @PutMapping("{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
     public void addFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId) {
-        if (userService.findUserById(friendId) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь " + friendId + " не найден");
-        }
-        if (userService.findUserById(id) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь " + id + " не найден");
-        }
-        userService.addFriend(userService.findUserById(id), friendId);
+        userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId) {
-        if (userService.findUserById(friendId) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь " + friendId + " не найден");
-        }
-        if (userService.findUserById(id) == null) {
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь " + id + " не найден");
-        }
-        userService.deleteFriend(userService.findUserById(id), friendId);
+        userService.deleteFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable("id") int id) {
-        return userService.getFriends(userService.findUserById(id));
+        return userService.getFriends(id);
     }
 
     @GetMapping("/{id}")
