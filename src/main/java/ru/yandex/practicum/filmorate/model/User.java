@@ -5,9 +5,9 @@ import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,16 +21,14 @@ public class User {
     @Pattern(regexp = "^\\S*")
     private String login;
     private String name;
-    @Past
-    private LocalDate birthday;
     private Set<Integer> friends;
+    @PastOrPresent
+    private Date birthday;
 
-    User(int id, String email, String login, String name, LocalDate birthday, Set<Integer> friends) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
-        this.friends = new HashSet<>();
+    public Set<Integer> getFriends() {
+        if (this.friends == null) {
+            return new HashSet<>();
+        }
+        return friends;
     }
 }
