@@ -25,12 +25,10 @@ public class User {
     private LocalDate birthday;
     private Set<Integer> friends;
 
-    User(int id, String email, String login, String name, LocalDate birthday, Set<Integer> friends) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
-        this.friends = new HashSet<>();
+    public Set<Integer> getFriends() {
+        if (this.friends == null) {
+            return new HashSet<>();
+        }
+        return friends;
     }
 }

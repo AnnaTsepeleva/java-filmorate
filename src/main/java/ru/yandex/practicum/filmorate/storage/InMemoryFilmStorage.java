@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validators.NotFoundException;
 import ru.yandex.practicum.filmorate.validators.ValidationException;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void deleteFilm(Film film) {
         if (!films.containsKey(film.getId())) {
             log.warn("Фильм не найден");
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Фильм не найден");
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "Фильм не найден");
         }
         films.remove(film.getId(), film);
         log.info("Фильм удален", film);
@@ -43,7 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film editFilm(Film film) {
         if (!films.containsKey(film.getId())) {
             log.warn("Фильм не найден");
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Фильм не найден");
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "Фильм не найден");
         }
         films.put(film.getId(), film);
         log.info("Фильм обновлен {}", film);
@@ -57,6 +58,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilmByID(int id) {
+        if (!films.containsKey(id)) {
+            log.warn("Фильм не найден");
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "Фильм не найден");
+        }
         return films.get(id);
     }
 }
