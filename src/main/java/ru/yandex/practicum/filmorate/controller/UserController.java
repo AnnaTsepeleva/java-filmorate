@@ -1,55 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.validators.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    private final HashMap<Integer, User> users = new HashMap<>();
-    private int idU = 1;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@Valid @RequestBody User user) {
-        log.info("Получен запрос.");
-        if (users.containsKey(user.getId())) {
-            log.warn("Такой пользователь уже существует");
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "Такой пользователь уже есть");
-        }
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-        user.setId(idU++);
-        users.put(user.getId(), user);
-        log.info("Пользователь добавлен");
-        return user;
+        return userService.createUser(user);
     }
 
     @GetMapping
     public List<User> findAll() {
-        return new ArrayList<>(users.values());
+        return userService.findAll();
     }
 
     @PutMapping
     public User saveUser(@RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            log.warn("Пользователь не найден");
-            throw new ValidationException(HttpStatus.NOT_FOUND, "Пользователь не найден");
-        }
-        users.put(user.getId(), user);
-        log.info("Пользователь обновлен");
-        return user;
+        return userService.saveUser(user);
+    }
+
+    @PutMapping("{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable("id") int id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable("id") int id) {
+        return userService.findUserById(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable("id") int idUser, @PathVariable("otherId") int idFriend) {
+        return userService.getCommonFriends(idUser, idFriend);
     }
 }
