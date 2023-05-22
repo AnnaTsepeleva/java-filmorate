@@ -23,10 +23,7 @@ public class RatingDbStorageImpl implements RatingDbStorage {
     }
 
     private Rating mapRowToRating(ResultSet resultSet, int rowNum) throws SQLException {
-        return Rating.builder()
-                .id(resultSet.getInt("id"))
-                .name(resultSet.getString("name"))
-                .build();
+        return Rating.builder().id(resultSet.getInt("id")).name(resultSet.getString("name")).build();
     }
 
     @Override
@@ -38,8 +35,7 @@ public class RatingDbStorageImpl implements RatingDbStorage {
 
     @Override
     public Rating getRatingById(int id) {
-        String sqlQuery = "select id, name " +
-                "from MPA where id = ?";
+        String sqlQuery = "select id, name " + "from MPA where id = ?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToRating, id);
         } catch (EmptyResultDataAccessException e) {

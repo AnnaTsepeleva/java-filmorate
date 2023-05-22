@@ -17,13 +17,8 @@ public class FriendShipDbStorageImpl implements FriendshipDbStorage {
 
     @Override
     public void addFriend(int userId, int friendId) {
-        String sqlQuery = "insert into friendship(user_id, friend_id, status, created_from) " +
-                "values (?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery,
-                userId,
-                friendId,
-                true,
-                LocalDateTime.now());
+        String sqlQuery = "insert into friendship(user_id, friend_id, status, created_from) " + "values (?, ?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, userId, friendId, true, LocalDateTime.now());
     }
 
     @Override
