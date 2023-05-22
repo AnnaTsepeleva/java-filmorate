@@ -24,13 +24,13 @@ import java.util.Set;
 
 
 @Component
-public class FilmDbStorageImplementation implements FilmDbStorage {
+public class FilmDbStorageImpl implements FilmDbStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genreDbStorage;
     private final RatingDbStorage ratingDbStorage;
     private final UserDbStorage userDbStorage;
 
-    public FilmDbStorageImplementation(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, RatingDbStorage ratingDbStorage, UserDbStorage userDbStorage) {
+    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, RatingDbStorage ratingDbStorage, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genreDbStorage = genreDbStorage;
         this.ratingDbStorage = ratingDbStorage;
@@ -38,7 +38,11 @@ public class FilmDbStorageImplementation implements FilmDbStorage {
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
-        return Film.builder().id(resultSet.getInt("id")).name(resultSet.getString("name")).description(resultSet.getString("description")).duration(resultSet.getLong("duration")).releaseDate(resultSet.getDate("release_Date").toLocalDate()).mpa(ratingDbStorage.getRatingById(resultSet.getInt("rating_id"))).build();
+        return Film.builder().id(resultSet.getInt("id"))
+                .name(resultSet.getString("name"))
+                .description(resultSet.getString("description"))
+                .duration(resultSet.getLong("duration"))
+                .releaseDate(resultSet.getDate("release_Date").toLocalDate()).mpa(ratingDbStorage.getRatingById(resultSet.getInt("rating_id"))).build();
     }
 
     @Override
@@ -99,6 +103,7 @@ public class FilmDbStorageImplementation implements FilmDbStorage {
         }
         return films;
     }
+
 
     @Override
     public Film editFilm(Film film) {
