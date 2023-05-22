@@ -41,5 +41,4 @@ public class Film {
             genres = new HashSet<>();
         }
         return genres;
-    }
 }
