@@ -23,22 +23,12 @@ public class Film {
     @DateReleaseValidator(message = "Некорректная дата релиза")
     private final LocalDate releaseDate;
     private int id;
-    private Rating mpa;
-    private Set<Genre> genres;
+    private Set<Integer> likes;
 
-    public Film(String name, String description, Long duration, LocalDate releaseDate, int id, Rating mpa, Set<Genre> genres) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.duration = duration;
-        this.releaseDate = releaseDate;
-        this.mpa = mpa;
-        this.genres = genres;
-    }
-
-    public Set<Genre> getGenres() {
-        if (genres == null) {
-            genres = new HashSet<>();
+    public Set<Integer> getLikes() {
+        if (this.likes == null) {
+            return new HashSet<>();
         }
-        return genres;
+        return likes;
+    }
 }
