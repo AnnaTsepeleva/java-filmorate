@@ -25,51 +25,46 @@ public class UserDbStorageImplementation implements UserDbStorage {
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-        return User.builder().id(resultSet.getInt("id")).email(resultSet.getString("email")).login(resultSet.getString("login")).name(resultSet.getString("name")).birthday(resultSet.getDate("birthday").toLocalDate()).build();
+                return User.builder()
+                .id(resultSet.getInt("id"))
+                .email(resultSet.getString("email"))
+                .login(resultSet.getString("login"))
+                .name(resultSet.getString("name"))
+                .birthday(resultSet.getDate("birthday").toLocalDate())
+                .build();
     }
 
     @Override
     public User findUserById(int id) {
-        String sqlQuery = "select id, email, login, name, birthday " + "from users where id = ?";
+        String sqlQuery = "select id, email, login, name, birthday " +
+                "from users where id = ?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(HttpStatus.NOT_FOUND, "Пользователь не найден");
-        }
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
-    }
-
-    @Override
-    public User createUser(User user) {
+Expand All
+	@@ -51,8 +44,7 @@ public User createUser(User user) {
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-        String sqlQuery = "insert into users(email, login, name, birthday) " + "values (?, ?, ?, ?)";
+        String sqlQuery = "insert into users(email, login, name, birthday) " +
+                "values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
-            stmt.setString(1, user.getEmail());
-            stmt.setString(2, user.getLogin());
-            stmt.setString(3, user.getName());
-            stmt.setDate(4, Date.valueOf(user.getBirthday()));
-            return stmt;
-        }, keyHolder);
-        user.setId((int) keyHolder.getKey().longValue());
-        return user;
-    }
-
+Expand All
+	@@ -69,15 +61,8 @@ public User createUser(User user) {
     @Override
     public User editUser(User user) {
         findUserById(user.getId());
-        String sqlQuery = "update users set " + "email = ?, login = ?, name = ?, birthday = ? " + "where id = ?";
-        jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        String sqlQuery = "update users set " +
+                "email = ?, login = ?, name = ?, birthday = ? " +
+                "where id = ?";
+        jdbcTemplate.update(sqlQuery
+                , user.getEmail()
+                , user.getLogin()
+                , user.getName()
+                , user.getBirthday()
+                , user.getId());
         return user;
     }
-
-    @Override
-    public ArrayList<User> getAllUsers() {
-        String sqlQuery = "select id, email, login, name, birthday from users";
-        return (ArrayList<User>) jdbcTemplate.query(sqlQuery, this::mapRowToUser);
-    }
-
 }
