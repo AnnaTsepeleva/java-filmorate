@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public class User {
     private String name;
     private Set<Integer> friends;
     @Past
-    private Date birthday;
+    private LocalDate birthday;
 
     public Set<Integer> getFriends() {
         if (this.friends == null) {
