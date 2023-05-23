@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +22,7 @@ public class User {
     private String login;
     private String name;
     @PastOrPresent
-    private LocalDate birthday
+    private Date birthday
         
     public Set<Integer> getLikes() {
         if (this.likes == null) {
