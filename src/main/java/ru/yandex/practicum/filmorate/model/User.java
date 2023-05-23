@@ -15,6 +15,7 @@ import java.util.Set;
 @Builder
 public class User {
     private int id;
+    @Past
     private Date birthday
     @Email
     private String email;
@@ -22,6 +23,7 @@ public class User {
     @Pattern(regexp = "^\\S*")
     private String login;
     private String name;
+    private Set<Integer> likes;
     
     public Set<Integer> getLikes() {
         if (this.likes == null) {
