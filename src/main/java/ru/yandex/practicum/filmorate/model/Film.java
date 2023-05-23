@@ -23,8 +23,8 @@ public class Film {
     @DateReleaseValidator(message = "Некорректная дата релиза")
     private final LocalDate releaseDate;
     private int id;
-    private Set<Integer> likes;
-
+    private Rating mpa;
+    private Set<Genre> genres;
     public Set<Integer> getLikes() {
         if (this.likes == null) {
             return new HashSet<>();

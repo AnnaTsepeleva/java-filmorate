@@ -3,14 +3,18 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.DAO.FilmDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class FilmService {
+    private final FilmStorage filmStorage;
+    private final FilmDbStorage filmDbStorage;
+
 
     Comparator<Film> filmComparator = new Comparator<Film>() {
         @Override
@@ -25,22 +29,19 @@ public class FilmService {
     private final FilmStorage filmStorage;
 
     public Film createFilm(Film film) {
-        return filmStorage.createFilm(film);
+        return filmDbStorage.createFilm(film);
     }
 
     public List<Film> getAllFilms() {
-        return filmStorage.getAllFilms();
+        return filmDbStorage.getAllFilms();
     }
 
     public Film editFilm(Film film) {
-        return filmStorage.editFilm(film);
-    }
-
-    public void deleteFilm(Film film) {
-        filmStorage.deleteFilm(film);
+        return filmDbStorage.editFilm(film);
     }
 
     public void likeFilm(int filmId, int userId) {
+
         Film film = filmStorage.getFilmByID(filmId);
         Set<Integer> likeList = film.getLikes();
         likeList.add(userId);
@@ -52,27 +53,16 @@ public class FilmService {
         Set<Integer> likeList = film.getLikes();
         likeList.remove(userId);
         film.setLikes(likeList);
+
     }
 
     public List<Film> filmRate(int count) {
-        ArrayList<Film> films = filmStorage.getAllFilms();
-        TreeMap<Film, Integer> likes = new TreeMap<>(filmComparator);
-        List<Film> ratesList = new ArrayList<Film>();
-        for (Film film : films) {
-            likes.put(film, film.getId());
-        }
-        if (likes.size() < count) {
-            count = likes.size();
-        }
-        for (int i = 0; i < count; i++) {
-            ratesList.add(likes.firstKey());
-            likes.remove(likes.firstKey());
-        }
-        return ratesList;
+        return filmDbStorage.filmRate(count);
     }
 
     public Film findFilmById(int id) {
         return filmStorage.getFilmByID(id);
+
     }
 
 }

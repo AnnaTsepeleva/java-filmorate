@@ -22,13 +22,12 @@ public class User {
     private String login;
     private String name;
     @Past
-    private LocalDate birthday;
-    private Set<Integer> friends;
-
+    private LocalDate birthday
     public Set<Integer> getFriends() {
         if (this.friends == null) {
             return new HashSet<>();
         }
         return friends;
+
     }
 }
