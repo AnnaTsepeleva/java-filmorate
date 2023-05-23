@@ -22,7 +22,10 @@ public class GenreDbStorageImpl implements GenreDbStorage {
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
-        return Genre.builder().id(resultSet.getInt("id")).name(resultSet.getString("name")).build();
+        return Genre.builder()
+                .id(resultSet.getInt("id"))
+                .name(resultSet.getString("name"))
+                .build();
     }
 
     @Override
