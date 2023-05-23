@@ -25,6 +25,7 @@ public class Film {
     private int id;
     private Rating mpa;
     private Set<Genre> genres;
+    
     public Set<Integer> getLikes() {
         if (this.likes == null) {
             return new HashSet<>();
