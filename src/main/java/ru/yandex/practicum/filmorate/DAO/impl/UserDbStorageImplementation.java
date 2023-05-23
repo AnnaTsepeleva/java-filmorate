@@ -25,7 +25,7 @@ public class UserDbStorageImplementation implements UserDbStorage {
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-                return User.builder()
+        return User.builder()
                 .id(resultSet.getInt("id"))
                 .email(resultSet.getString("email"))
                 .login(resultSet.getString("login"))
@@ -41,8 +41,13 @@ public class UserDbStorageImplementation implements UserDbStorage {
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
         } catch (EmptyResultDataAccessException e) {
-Expand All
-	@@ -51,8 +44,7 @@ public User createUser(User user) {
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+        }
+        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+    }
+
+    @Override
+    public User createUser(User user) {
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
@@ -51,8 +56,16 @@ Expand All
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
-Expand All
-	@@ -69,15 +61,8 @@ public User createUser(User user) {
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getLogin());
+            stmt.setString(3, user.getName());
+            stmt.setDate(4, Date.valueOf(user.getBirthday()));
+            return stmt;
+        }, keyHolder);
+        user.setId((int) keyHolder.getKey().longValue());
+        return user;
+    }
+
     @Override
     public User editUser(User user) {
         findUserById(user.getId());
@@ -67,4 +80,11 @@ Expand All
                 , user.getId());
         return user;
     }
+
+    @Override
+    public ArrayList<User> getAllUsers() {
+        String sqlQuery = "select id, email, login, name, birthday from users";
+        return (ArrayList<User>) jdbcTemplate.query(sqlQuery, this::mapRowToUser);
+    }
+
 }
