@@ -15,7 +15,6 @@ import java.util.Set;
 @Builder
 public class User {
     private int id;
-    @PastOrPresent
     private Date birthday
     @Email
     private String email;
