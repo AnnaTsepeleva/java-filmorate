@@ -23,11 +23,10 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday
-    public Set<Integer> getFriends() {
-        if (this.friends == null) {
+    public Set<Integer> getLikes() {
+        if (this.likes == null) {
             return new HashSet<>();
         }
-        return friends;
-
+        return likes;
     }
 }
