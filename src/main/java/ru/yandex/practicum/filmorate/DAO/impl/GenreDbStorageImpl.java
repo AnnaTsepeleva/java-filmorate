@@ -37,7 +37,8 @@ public class GenreDbStorageImpl implements GenreDbStorage {
 
     @Override
     public Genre getGenreById(int id) {
-        String sqlQuery = "select id, name " + "from genre where id = ?";
+        String sqlQuery = "select id, name " +
+                "from genre where id = ?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);
         } catch (EmptyResultDataAccessException e) {
