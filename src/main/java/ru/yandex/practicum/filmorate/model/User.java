@@ -15,15 +15,15 @@ import java.util.Set;
 @Builder
 public class User {
     private int id;
+    @PastOrPresent
+    private Date birthday
     @Email
     private String email;
     @NotBlank
     @Pattern(regexp = "^\\S*")
     private String login;
     private String name;
-    @PastOrPresent
-    private Date birthday
-     //коммент   
+    
     public Set<Integer> getLikes() {
         if (this.likes == null) {
             return new HashSet<>();
