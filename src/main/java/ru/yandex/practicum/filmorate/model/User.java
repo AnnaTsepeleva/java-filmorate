@@ -23,7 +23,7 @@ public class User {
     private String name;
     @PastOrPresent
     private Date birthday
-        
+     //коммент   
     public Set<Integer> getLikes() {
         if (this.likes == null) {
             return new HashSet<>();
