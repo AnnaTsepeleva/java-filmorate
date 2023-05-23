@@ -21,7 +21,7 @@ public class User {
     @Pattern(regexp = "^\\S*")
     private String login;
     private String name;
-    @Past
+    @PastOrPresent
     private LocalDate birthday
         
     public Set<Integer> getLikes() {
