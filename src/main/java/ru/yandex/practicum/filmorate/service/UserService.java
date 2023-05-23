@@ -3,36 +3,29 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.DAO.FriendshipDbStorage;
-import ru.yandex.practicum.filmorate.DAO.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserDbStorage userDbStorage;
-    private final FriendshipDbStorage friendshipDbStorage;
-
     @Autowired
     private final UserStorage userStorage;
 
-
     public User createUser(User user) {
-        return userDbStorage.createUser(user);
+        return userStorage.createUser(user);
     }
 
     public List<User> findAll() {
-        return userDbStorage.getAllUsers();
+        return userStorage.getAllUsers();
     }
 
     public User saveUser(User user) {
-        return userDbStorage.editUser(user);
+        return userStorage.editUser(user);
     }
 
     public User findUserById(int id) {
@@ -65,19 +58,19 @@ public class UserService {
         ArrayList<User> friendsList = new ArrayList<>();
         Set<Integer> friends = userStorage.getUserByID(id).getFriends();
         for (int friend : friends) {
-            friendsList.add(userDbStorage.findUserById(friend));
+            friendsList.add(userStorage.getUserByID(friend));
         }
         return friendsList;
     }
 
     public List<User> getCommonFriends(int idUser, int idFriend) {
         ArrayList<User> commonFriendsList = new ArrayList<>();
-        List<Integer> userFriends = friendshipDbStorage.getFriends(idUser);
-        List<Integer> friendFriends = friendshipDbStorage.getFriends(idFriend);
-        for (int friend : userFriends) {
-            if (friendFriends.contains(friend)) {
-                commonFriendsList.add(userDbStorage.findUserById(friend));
-            }
+        User user = userStorage.getUserByID(idUser);
+        User friend = userStorage.getUserByID(idFriend);
+        Set<Integer> friends = user.getFriends();
+        for (int friendID : friends) {
+            if (friend.getFriends().contains(friendID))
+                commonFriendsList.add(userStorage.getUserByID(friendID));
         }
         return commonFriendsList;
     }
