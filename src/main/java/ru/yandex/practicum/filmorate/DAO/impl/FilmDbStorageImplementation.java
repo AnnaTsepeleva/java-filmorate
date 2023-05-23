@@ -24,13 +24,13 @@ import java.util.Set;
 
 
 @Component
-public class FilmDbStorageImpl implements FilmDbStorage {
+public class FilmDbStorageImplementation implements FilmDbStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genreDbStorage;
     private final RatingDbStorage ratingDbStorage;
     private final UserDbStorage userDbStorage;
 
-    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, RatingDbStorage ratingDbStorage, UserDbStorage userDbStorage) {
+    public FilmDbStorageImplementation(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, RatingDbStorage ratingDbStorage, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genreDbStorage = genreDbStorage;
         this.ratingDbStorage = ratingDbStorage;

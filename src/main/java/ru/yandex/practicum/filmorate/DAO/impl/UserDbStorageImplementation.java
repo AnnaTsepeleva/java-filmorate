@@ -17,20 +17,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Component
-public class UserDbStorageImpl implements UserDbStorage {
+public class UserDbStorageImplementation implements UserDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
+    public UserDbStorageImplementation(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-        return User.builder().id(resultSet.getInt("id")).email(resultSet.getString("email")).login(resultSet.getString("login")).name(resultSet.getString("name")).birthday(resultSet.getDate("birthday").toLocalDate()).build();
+        return User.builder()
+                .id(resultSet.getInt("id"))
+                .email(resultSet.getString("email"))
+                .login(resultSet.getString("login"))
+                .name(resultSet.getString("name"))
+                .birthday(resultSet.getDate("birthday").toLocalDate())
+                .build();
     }
 
     @Override
     public User findUserById(int id) {
-        String sqlQuery = "select id, email, login, name, birthday " + "from users where id = ?";
+        String sqlQuery = "select id, email, login, name, birthday " +
+                "from users where id = ?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
         } catch (EmptyResultDataAccessException e) {
@@ -44,7 +51,8 @@ public class UserDbStorageImpl implements UserDbStorage {
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-        String sqlQuery = "insert into users(email, login, name, birthday) " + "values (?, ?, ?, ?)";
+        String sqlQuery = "insert into users(email, login, name, birthday) " +
+                "values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
@@ -61,8 +69,15 @@ public class UserDbStorageImpl implements UserDbStorage {
     @Override
     public User editUser(User user) {
         findUserById(user.getId());
-        String sqlQuery = "update users set " + "email = ?, login = ?, name = ?, birthday = ? " + "where id = ?";
-        jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        String sqlQuery = "update users set " +
+                "email = ?, login = ?, name = ?, birthday = ? " +
+                "where id = ?";
+        jdbcTemplate.update(sqlQuery
+                , user.getEmail()
+                , user.getLogin()
+                , user.getName()
+                , user.getBirthday()
+                , user.getId());
         return user;
     }
 

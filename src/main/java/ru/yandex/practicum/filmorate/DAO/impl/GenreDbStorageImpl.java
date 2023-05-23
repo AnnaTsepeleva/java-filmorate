@@ -22,7 +22,10 @@ public class GenreDbStorageImpl implements GenreDbStorage {
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
-        return Genre.builder().id(resultSet.getInt("id")).name(resultSet.getString("name")).build();
+        return Genre.builder()
+                .id(resultSet.getInt("id"))
+                .name(resultSet.getString("name"))
+                .build();
     }
 
     @Override
@@ -34,7 +37,8 @@ public class GenreDbStorageImpl implements GenreDbStorage {
 
     @Override
     public Genre getGenreById(int id) {
-        String sqlQuery = "select id, name " + "from genre where id = ?";
+        String sqlQuery = "select id, name " +
+                "from genre where id = ?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);
         } catch (EmptyResultDataAccessException e) {
