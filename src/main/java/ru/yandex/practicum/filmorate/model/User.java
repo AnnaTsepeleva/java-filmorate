@@ -22,8 +22,13 @@ public class User {
     private String login;
     private String name;
     private Set<Integer> friends;
+<<<<<<< HEAD
     @PastOrPresent
     private Date birthday;
+=======
+    @Past
+    private LocalDate birthday;
+>>>>>>> f3eb81d3554b0eb83a8808fa81035f1c022a668a
 
     public Set<Integer> getFriends() {
         if (this.friends == null) {
