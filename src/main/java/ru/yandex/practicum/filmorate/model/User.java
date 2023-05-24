@@ -5,9 +5,9 @@ import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pastt;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,13 +22,8 @@ public class User {
     private String login;
     private String name;
     private Set<Integer> friends;
-<<<<<<< HEAD
-    @PastOrPresent
-    private Date birthday;
-=======
     @Past
     private LocalDate birthday;
->>>>>>> f3eb81d3554b0eb83a8808fa81035f1c022a668a
 
     public Set<Integer> getFriends() {
         if (this.friends == null) {
