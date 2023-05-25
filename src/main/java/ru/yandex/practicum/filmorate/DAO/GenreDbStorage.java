@@ -11,5 +11,5 @@ public interface GenreDbStorage {
 
     List<Genre> findGenreByFilm(int filmID);
 
-    void setGenreInDB (int filmID, List<Genre> genres);
+    void setGenreInDB(int filmID, List<Genre> genres);
 }
