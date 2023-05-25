@@ -8,8 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,9 +24,9 @@ public class Film {
     private final LocalDate releaseDate;
     private int id;
     private Rating mpa;
-    private Set<Genre> genres;
+    private List<Genre> genres;
 
-    public Film(String name, String description, Long duration, LocalDate releaseDate, int id, Rating mpa, Set<Genre> genres) {
+    public Film(String name, String description, Long duration, LocalDate releaseDate, int id, Rating mpa, List<Genre> genres) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -36,9 +36,9 @@ public class Film {
         this.genres = genres;
     }
 
-    public Set<Genre> getGenres() {
+    public List<Genre> getGenres() {
         if (genres == null) {
-            genres = new HashSet<>();
+            genres = new ArrayList<>();
         }
         return genres;
     }

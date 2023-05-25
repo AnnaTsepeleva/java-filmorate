@@ -8,4 +8,8 @@ public interface GenreDbStorage {
     List<Genre> findAllGenre();
 
     Genre getGenreById(int id);
+
+    List<Genre> findGenreByFilm(int filmID);
+
+    void setGenreInDB (int filmID, List<Genre> genres);
 }

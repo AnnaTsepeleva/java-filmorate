@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.DAO.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validators.NotFoundException;
 
 import java.sql.Date;
@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Component
-public class UserDbStorageImpl implements UserDbStorage {
+public class UserDbStorageImpl implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
@@ -25,12 +25,16 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-        return User.builder().id(resultSet.getInt("id")).email(resultSet.getString("email")).login(resultSet.getString("login")).name(resultSet.getString("name")).birthday(resultSet.getDate("birthday").toLocalDate()).build();
+        return User.builder().id(resultSet.getInt("id"))
+                .email(resultSet.getString("email"))
+                .login(resultSet.getString("login"))
+                .name(resultSet.getString("name"))
+                .birthday(resultSet.getDate("birthday").toLocalDate()).build();
     }
 
     @Override
-    public User findUserById(int id) {
-        String sqlQuery = "select id, email, login, name, birthday " + "from users where id = ?";
+    public User getUserByID(int id) {
+        String sqlQuery = "select * from users where id = ?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
         } catch (EmptyResultDataAccessException e) {
@@ -44,7 +48,7 @@ public class UserDbStorageImpl implements UserDbStorage {
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-        String sqlQuery = "insert into users(email, login, name, birthday) " + "values (?, ?, ?, ?)";
+        String sqlQuery = "insert into users(email, login, name, birthday) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
@@ -59,9 +63,15 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     @Override
+    public void deleteUser(User user) {
+        String sqlQuery3 = "delete from users where id =?";
+        jdbcTemplate.update(sqlQuery3, user.getId());
+    }
+
+    @Override
     public User editUser(User user) {
-        findUserById(user.getId());
-        String sqlQuery = "update users set " + "email = ?, login = ?, name = ?, birthday = ? " + "where id = ?";
+        getUserByID(user.getId());
+        String sqlQuery = "update users set email = ?, login = ?, name = ?, birthday = ? where id = ?";
         jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return user;
     }

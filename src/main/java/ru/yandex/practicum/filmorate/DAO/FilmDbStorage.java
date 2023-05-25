@@ -15,7 +15,5 @@ public interface FilmDbStorage {
 
     void likeFilm(int filmId, int userId);
 
-    void deleteLike(int filmId, int userId);
-
     List<Film> filmRate(int count);
 }

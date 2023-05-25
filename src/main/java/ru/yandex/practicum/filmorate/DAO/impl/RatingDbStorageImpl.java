@@ -28,14 +28,14 @@ public class RatingDbStorageImpl implements RatingDbStorage {
 
     @Override
     public List<Rating> findAllRating() {
-        String sqlQuery = "select id, name from MPA";
+        String sqlQuery = "select * from MPA";
         return (ArrayList<Rating>) jdbcTemplate.query(sqlQuery, this::mapRowToRating);
 
     }
 
     @Override
     public Rating getRatingById(int id) {
-        String sqlQuery = "select id, name " + "from MPA where id = ?";
+        String sqlQuery = "select * from MPA where id = ?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::mapRowToRating, id);
         } catch (EmptyResultDataAccessException e) {
