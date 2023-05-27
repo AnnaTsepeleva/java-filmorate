@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.DAO.impl;
+package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.DAO.RatingDbStorage;
+import ru.yandex.practicum.filmorate.dao.storage.RatingDbStorage;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.validators.NotFoundException;
 
@@ -36,12 +36,10 @@ public class RatingDbStorageImpl implements RatingDbStorage {
     @Override
     public Rating getRatingById(int id) {
         String sqlQuery = "select * from MPA where id = ?";
-        try {
-            jdbcTemplate.queryForObject(sqlQuery, this::mapRowToRating, id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(HttpStatus.NOT_FOUND, "Рейтинг не найден");
+        if (!jdbcTemplate.query(sqlQuery, this::mapRowToRating, id).isEmpty())
+         {
+             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToRating, id);
         }
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToRating, id);
-
+        throw new NotFoundException(HttpStatus.NOT_FOUND, "Рейтинг не найден");
     }
 }

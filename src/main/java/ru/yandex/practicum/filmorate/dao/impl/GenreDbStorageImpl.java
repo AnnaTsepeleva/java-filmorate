@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.DAO.impl;
+package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.DAO.GenreDbStorage;
+import ru.yandex.practicum.filmorate.dao.storage.GenreDbStorage;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.validators.NotFoundException;
 
@@ -39,12 +39,11 @@ public class GenreDbStorageImpl implements GenreDbStorage {
     @Override
     public Genre getGenreById(int id) {
         String sqlQuery = "select * from genre where id = ?";
-        try {
-            jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(HttpStatus.NOT_FOUND, "Жанр не найден");
+        if (!jdbcTemplate.query(sqlQuery, this::mapRowToGenre, id).isEmpty())
+        {
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);
         }
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);
+        throw new NotFoundException(HttpStatus.NOT_FOUND, "Жанр не найден");
     }
 
     @Override

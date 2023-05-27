@@ -1,13 +1,12 @@
-package ru.yandex.practicum.filmorate.DAO.impl;
+package ru.yandex.practicum.filmorate.dao.impl;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.storage.UserStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validators.NotFoundException;
 
 import java.sql.Date;
@@ -35,12 +34,11 @@ public class UserDbStorageImpl implements UserStorage {
     @Override
     public User getUserByID(int id) {
         String sqlQuery = "select * from users where id = ?";
-        try {
-            jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+        if (!jdbcTemplate.query(sqlQuery, this::mapRowToUser, id).isEmpty())
+        {
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
         }
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+        throw new NotFoundException(HttpStatus.NOT_FOUND, "Пользователь не найден");
     }
 
     @Override
