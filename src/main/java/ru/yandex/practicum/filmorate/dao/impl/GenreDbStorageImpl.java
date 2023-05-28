@@ -75,8 +75,8 @@ public class GenreDbStorageImpl implements GenreDbStorage {
 
     @Override
     public void setGenresListFilmsDB(List<Film> films) {
-        List <Integer> listID = new ArrayList<>();
-        for (Film film: films) {
+        List<Integer> listID = new ArrayList<>();
+        for (Film film : films) {
             listID.add(film.getId());
         }
         String sep = ",";
