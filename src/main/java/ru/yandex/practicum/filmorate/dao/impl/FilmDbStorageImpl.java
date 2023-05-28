@@ -21,9 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 @Component
@@ -53,8 +50,9 @@ public class FilmDbStorageImpl implements FilmStorage {
     @Override
     public Film getFilmByID(int id) {
         String sqlQuery = "select * from films, MPA where films.rating_id = MPA.id and films.id = ?";
-        if (!jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id).isEmpty()) {
-            Film film = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
+        if (!films.isEmpty()) {
+            Film film = films.get(0);
             film.setGenres(genreDbStorage.findGenreByFilm(id));
             return film;
         }
@@ -89,21 +87,8 @@ public class FilmDbStorageImpl implements FilmStorage {
     @Override
     public List<Film> getAllFilms() {
         String sqlQueryFilms = "select * from films, MPA  where films.rating_id = MPA.id";
-        String sqlQueryFilmGenre = "select film_genre.film_id, genre.id, genre.name from film_genre, genre where film_genre.genre_id = genre.id order by film_genre.film_id";
         List<Film> films = jdbcTemplate.query(sqlQueryFilms, this::mapRowToFilm);
-        Map<Integer, Film> mapedFilms = films.stream()
-                .collect(Collectors.toMap(Film::getId, Function.identity()));
-
-        List<Map<String, Object>> genresList = jdbcTemplate.queryForList(sqlQueryFilmGenre);
-
-        for (Map<String, Object> t : genresList) {
-            Film film = mapedFilms.get((Integer) t.get("film_id"));
-            Genre genre = Genre.builder()
-                    .id((Integer) t.get("id"))
-                    .name(t.get("name").toString())
-                    .build();
-            film.getGenres().add(genre);
-        }
+        genreDbStorage.setGenresListFilmsDB(films);
         return films;
     }
 
@@ -136,23 +121,8 @@ public class FilmDbStorageImpl implements FilmStorage {
     @Override
     public List<Film> filmRate(int count) {
         String sqlQuery = "select * from films join MPA on films.rating_id = MPA.id left join film_likes on film_likes.film_id = films.id group by films.name order by count(film_likes.film_id) desc limit ?";
-        String sqlQueryFilmGenre =
-                "select film_genre.film_id, genre.id, genre.name from film_genre, genre where film_genre.genre_id = genre.id and " +
-                "film_genre.film_id in (select films.id from films join MPA on films.rating_id = MPA.id left join film_likes on film_likes.film_id = films.id group by films.name order by count(film_likes.film_id) desc limit ?) ";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
-        Map<Integer, Film> mapedFilms = films.stream()
-                .collect(Collectors.toMap(Film::getId, Function.identity()));
-
-        List<Map<String, Object>> genresList = jdbcTemplate.queryForList(sqlQueryFilmGenre, count);
-
-        for (Map<String, Object> t : genresList) {
-            Film film = mapedFilms.get((Integer) t.get("film_id"));
-            Genre genre = Genre.builder()
-                    .id((Integer) t.get("id"))
-                    .name(t.get("name").toString())
-                    .build();
-            film.getGenres().add(genre);
-        }
+        genreDbStorage.setGenresListFilmsDB(films);
         return films;
     }
 }

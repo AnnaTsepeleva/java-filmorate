@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class UserDbStorageImpl implements UserStorage {
@@ -34,8 +35,9 @@ public class UserDbStorageImpl implements UserStorage {
     @Override
     public User getUserByID(int id) {
         String sqlQuery = "select * from users where id = ?";
-        if (!jdbcTemplate.query(sqlQuery, this::mapRowToUser, id).isEmpty()) {
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+        List<User> users = jdbcTemplate.query(sqlQuery, this::mapRowToUser, id);
+        if (!users.isEmpty()) {
+            return users.get(0);
         }
         throw new NotFoundException(HttpStatus.NOT_FOUND, "Пользователь не найден");
     }

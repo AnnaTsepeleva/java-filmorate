@@ -35,8 +35,9 @@ public class RatingDbStorageImpl implements RatingDbStorage {
     @Override
     public Rating getRatingById(int id) {
         String sqlQuery = "select * from MPA where id = ?";
-        if (!jdbcTemplate.query(sqlQuery, this::mapRowToRating, id).isEmpty()) {
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToRating, id);
+        List<Rating> ratings = jdbcTemplate.query(sqlQuery, this::mapRowToRating, id);
+        if (!ratings.isEmpty()) {
+            return ratings.get(0);
         }
         throw new NotFoundException(HttpStatus.NOT_FOUND, "Рейтинг не найден");
     }

@@ -5,16 +5,16 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.storage.GenreDbStorage;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.validators.NotFoundException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class GenreDbStorageImpl implements GenreDbStorage {
@@ -38,8 +38,9 @@ public class GenreDbStorageImpl implements GenreDbStorage {
     @Override
     public Genre getGenreById(int id) {
         String sqlQuery = "select * from genre where id = ?";
-        if (!jdbcTemplate.query(sqlQuery, this::mapRowToGenre, id).isEmpty()) {
-            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);
+        List<Genre> genres = jdbcTemplate.query(sqlQuery, this::mapRowToGenre, id);
+        if (!genres.isEmpty()) {
+            return genres.get(0);
         }
         throw new NotFoundException(HttpStatus.NOT_FOUND, "Жанр не найден");
     }
@@ -69,7 +70,33 @@ public class GenreDbStorageImpl implements GenreDbStorage {
                     return genreWODouble.size();
                 }
             });
-
         }
     }
+
+    @Override
+    public void setGenresListFilmsDB(List<Film> films) {
+        List <Integer> listID = new ArrayList<>();
+        for (Film film: films) {
+            listID.add(film.getId());
+        }
+        String sep = ",";
+        String str = listID.stream().map(Object::toString)
+                .collect(Collectors.joining(sep));
+        String sqlQueryFilmGenre = "select film_genre.film_id, genre.id, genre.name from film_genre, genre where film_genre.genre_id = genre.id and film_genre.film_id in (" + str + ") order by film_genre.film_id";
+        Map<Integer, Film> mapedFilms = films.stream()
+                .collect(Collectors.toMap(Film::getId, Function.identity()));
+
+        List<Map<String, Object>> genresList = jdbcTemplate.queryForList(sqlQueryFilmGenre);
+
+        for (Map<String, Object> t : genresList) {
+            Film film = mapedFilms.get((Integer) t.get("film_id"));
+            Genre genre = Genre.builder()
+                    .id((Integer) t.get("id"))
+                    .name(t.get("name").toString())
+                    .build();
+            film.getGenres().add(genre);
+        }
+    }
+
+
 }
