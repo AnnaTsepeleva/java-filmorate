@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validators.NotFoundException;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.validators.ValidationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -63,5 +65,20 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException(HttpStatus.NOT_FOUND, "Фильм не найден");
         }
         return films.get(id);
+    }
+
+    @Override
+    public void likeFilm(int filmId, int userId) {
+
+    }
+
+    @Override
+    public void deleteLike(int filmId, int userId) {
+
+    }
+
+    @Override
+    public List<Film> filmRate(int count) {
+        return null;
     }
 }

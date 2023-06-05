@@ -8,8 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,12 +23,23 @@ public class Film {
     @DateReleaseValidator(message = "Некорректная дата релиза")
     private final LocalDate releaseDate;
     private int id;
-    private Set<Integer> likes;
+    private Rating mpa;
+    private List<Genre> genres;
 
-    public Set<Integer> getLikes() {
-        if (this.likes == null) {
-            return new HashSet<>();
+    public Film(String name, String description, Long duration, LocalDate releaseDate, int id, Rating mpa, List<Genre> genres) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.releaseDate = releaseDate;
+        this.mpa = mpa;
+        this.genres = genres;
+    }
+
+    public List<Genre> getGenres() {
+        if (genres == null) {
+            genres = new ArrayList<>();
         }
-        return likes;
+        return genres;
     }
 }

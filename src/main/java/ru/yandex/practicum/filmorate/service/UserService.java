@@ -1,76 +1,73 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.storage.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.dao.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
+    private final UserStorage userDbStorage;
+    private final FriendshipDbStorage friendshipDbStorage;
+
     @Autowired
-    private final UserStorage userStorage;
+    public UserService(@Qualifier("userDbStorageImpl") UserStorage userDbStorage, FriendshipDbStorage friendshipDbStorage) {
+        this.friendshipDbStorage = friendshipDbStorage;
+        this.userDbStorage = userDbStorage;
+    }
 
     public User createUser(User user) {
-        return userStorage.createUser(user);
+        return userDbStorage.createUser(user);
     }
 
     public List<User> findAll() {
-        return userStorage.getAllUsers();
+        return userDbStorage.getAllUsers();
     }
 
     public User saveUser(User user) {
-        return userStorage.editUser(user);
+        return userDbStorage.editUser(user);
     }
 
     public User findUserById(int id) {
-        return userStorage.getUserByID(id);
+        return userDbStorage.getUserByID(id);
     }
 
     public void addFriend(int userId, int friendId) {
-        User user = userStorage.getUserByID(userId);
-        User friend = userStorage.getUserByID(friendId);
-        Set<Integer> userFrList = user.getFriends();
-        userFrList.add(friendId);
-        user.setFriends(userFrList);
-        Set<Integer> friendFrList = friend.getFriends();
-        friendFrList.add(userId);
-        friend.setFriends(friendFrList);
+        User user = userDbStorage.getUserByID(userId);
+        User friend = userDbStorage.getUserByID(friendId);
+        friendshipDbStorage.addFriend(userId, friendId);
     }
 
     public void deleteFriend(int userId, int friendId) {
-        User user = userStorage.getUserByID(userId);
-        User friend = userStorage.getUserByID(friendId);
-        Set<Integer> userFrList = user.getFriends();
-        userFrList.remove(friendId);
-        user.setFriends(userFrList);
-        Set<Integer> friendFrList = friend.getFriends();
-        friendFrList.remove(userId);
-        friend.setFriends(friendFrList);
+        User user = userDbStorage.getUserByID(userId);
+        User friend = userDbStorage.getUserByID(friendId);
+        friendshipDbStorage.deleteFriend(userId, friendId);
     }
 
     public List<User> getFriends(int id) {
+        User user = userDbStorage.getUserByID(id);
         ArrayList<User> friendsList = new ArrayList<>();
-        Set<Integer> friends = userStorage.getUserByID(id).getFriends();
-        for (int friend : friends) {
-            friendsList.add(userStorage.getUserByID(friend));
+        List<User> friends = friendshipDbStorage.getFriends(id);
+        for (User friend : friends) {
+            friendsList.add(friend);
         }
         return friendsList;
     }
 
     public List<User> getCommonFriends(int idUser, int idFriend) {
         ArrayList<User> commonFriendsList = new ArrayList<>();
-        User user = userStorage.getUserByID(idUser);
-        User friend = userStorage.getUserByID(idFriend);
-        Set<Integer> friends = user.getFriends();
-        for (int friendID : friends) {
-            if (friend.getFriends().contains(friendID))
-                commonFriendsList.add(userStorage.getUserByID(friendID));
+        List<User> userFriends = friendshipDbStorage.getFriends(idUser);
+        List<User> friendFriends = friendshipDbStorage.getFriends(idFriend);
+        for (User friend : userFriends) {
+            if (friendFriends.contains(friend)) {
+                commonFriendsList.add(friend);
+            }
         }
         return commonFriendsList;
     }

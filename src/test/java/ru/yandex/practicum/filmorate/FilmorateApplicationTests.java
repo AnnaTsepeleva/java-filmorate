@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -29,12 +30,15 @@ class FilmorateApplicationTests {
 
     @Test
     void addFilm() throws Exception {
+        Rating rating = Rating.builder()
+                .id(1).name("G").build();
         Film film = Film.builder()
                 .id(1)
                 .name("Test")
                 .description("descr")
                 .duration(100)
                 .releaseDate(LocalDate.of(1991, 7, 30))
+                .mpa(rating)
                 .build();
         mockMvc.perform(post("/films")
                         .content(objectMapper.writeValueAsString(film))
